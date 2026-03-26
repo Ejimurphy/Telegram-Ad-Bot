@@ -384,24 +384,36 @@ def mark_closed(user_id):
     return "ok"
 
 # -------------------- TELEGRAM COMMANDS --------------------
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    ad_count.setdefault(user_id, 0)
-    user_list.add(user_id)
-    web = os.environ.get("RENDER_EXTERNAL_URL", f"http://localhost:{os.environ.get('PORT', 5000)}")
-    keyboard = [[InlineKeyboardButton("🎬 Start Watching Ads", url=f"{web}/user/{user_id}")]]
-    await update.message.reply_text(
-        f"Welcome! Current Mode: *{get_mode()}*\n\nWatch 5 ads to unlock Canva Pro 🎁",
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="Markdown"
-    )
+
 
 async def setads(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_admin(update.effective_user.id):
         return await update.message.reply_text("🚫 Admin only.")
     if not context.args or not context.args[0].isdigit():
         return await update.message.reply_text("Usage: /setads <number>")
-    n = int(context.args[0])
+    n = int(context.argsasync def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    ad_count.setdefault(user_id, 0)
+    user_list.add(user_id)
+
+    web = os.environ.get("RENDER_EXTERNAL_URL", f"http://localhost:{os.environ.get('PORT', 5000)}")
+
+    # 👑 ADMIN → DASHBOARD
+    if is_admin(user_id):
+        keyboard = [[InlineKeyboardButton("🚀 Open Dashboard", url=f"{web}/dashboard?uid={user_id}")]]
+        await update.message.reply_text(
+            "Welcome Admin 🚀\n\nManage your system below:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+    # 👤 NORMAL USER → ADS
+    keyboard = [[InlineKeyboardButton("🎬 Start Watching Ads", url=f"{web}/user/{user_id}")]]
+    await update.message.reply_text(
+        f"Welcome! Current Mode: *{get_mode()}*\n\nWatch {get_required_ads()} ads to unlock Canva Pro 🎁",
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="Markdown"
+        )[0])
     if n < 1 or n > 100:
         return await update.message.reply_text("⚠️ Choose a number between 1 and 100.")
     set_required_ads(n)
