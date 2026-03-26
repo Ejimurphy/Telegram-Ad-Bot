@@ -422,23 +422,7 @@ async def setads(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def getads(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"🎯 Current required ads: {get_required_ads()}")
 
-async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
-        "🤖 Bot Commands\n"
-        "/start - Open your ad page\n"
-        "/help - Show this help\n\n"
-        "Admin commands:\n"
-        "/updategift <link>\n"
-        "/getgift\n"
-        "/resetads\n"
-        "/broadcast <msg>\n"
-        "/setmode <monetag|promo>\n"
-        "/switchmode\n"
-        "/setpromo <link>\n"
-        "/currentmode\n"
-        "/status\n"
-    )
-    await update.message.reply_text(text)
+
 
 def is_admin(uid):
     return uid == ADMIN_ID
@@ -459,7 +443,35 @@ async def getgift(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def resetads(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_admin(update.effective_user.id):
-        return await update.message.reply_text("🚫 Admin only.")
+        return await update.message.replyasync def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    # 👑 ADMIN HELP
+    if is_admin(user_id):
+        text = (
+            "👑 Admin Commands\n\n"
+            "/start\n"
+            "/help\n\n"
+            "/updategift <link>\n"
+            "/getgift\n"
+            "/resetads\n"
+            "/broadcast <msg>\n"
+            "/setmode <monetag|promo>\n"
+            "/switchmode\n"
+            "/setpromo <link>\n"
+            "/currentmode\n"
+            "/status\n"
+            "/setads <n>\n"
+            "/getads\n"
+        )
+        return await update.message.reply_text(text)
+
+    # 👤 NORMAL USER
+    await update.message.reply_text(
+        "🤖 Commands:\n\n"
+        "/start - Start watching ads\n"
+        "/help - Show help"
+    )_text("🚫 Admin only.")
     ad_count.clear()
     verified_users.clear()
     close_times.clear()
