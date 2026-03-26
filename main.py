@@ -17,7 +17,10 @@ from markupsafe import Markup
 
 # -------------------- CONFIG --------------------
 TOKEN = "8103309728:AAGKsck7UMUmfjucRRNoEcc3YFazhvz_u3I"
-ADMIN_ID = 5236441213
+ADMIN_IDS = [5236441213, 5725566044]
+
+def is_admin(uid):
+    return int(uid) in ADMIN_IDS
 PREMIUM_APPS_LINK = "https://t.me/gsf8mqOl0atkMTM0"
 CHEAP_DATA_LINK = "https://play.google.com/store/apps/details?id=fonpaybusiness.aowd"
 MONETAG_ZONE = "10089898"
@@ -299,7 +302,32 @@ def user_page(user_id):
         user_id=user_id,
         inactivity_ms=INACTIVITY_MS
     )
+@app.route("/dashboard")
+def dashboard():
+    user_id = request.args.get("uid")
 
+    if not user_id:
+        return "Unauthorized", 403
+
+    if not is_admin(int(user_id)):
+        return "Access Denied", 403
+
+    return """
+    <html>
+    <head><title>Dashboard</title></head>
+    <body style="background:#0d0d0d;color:white;font-family:sans-serif;text-align:center;padding:40px;">
+        <h1>🚀 Admin Dashboard</h1>
+        <p>Welcome Admin {}</p>
+
+        <div style="margin-top:30px;">
+            <a href="/user/{}" style="display:block;margin:10px;">🎬 Open Ads Page</a>
+            <a href="#" style="display:block;margin:10px;">📢 Publish Post (Coming)</a>
+            <a href="#" style="display:block;margin:10px;">📊 Analytics (Coming)</a>
+        </div>
+    </body>
+    </html>
+    """.format(user_id, user_id)
+    
 @app.route("/verify_ad/<int:user_id>/<int:count>", methods=["POST"])
 def verify_ad(user_id, count):
     prev = ad_count.get(user_id, 0)
